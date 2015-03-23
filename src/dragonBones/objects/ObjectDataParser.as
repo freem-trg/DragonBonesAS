@@ -174,12 +174,12 @@
 			
 			for each(var rectangleObject:Object in boneObject[ConstValues.RECTANGLE])
 			{
-				boneObject.addAreaData(parseRectangleData(rectangleObject));
+				boneData.addAreaData(parseRectangleData(rectangleObject));
 			}
 			
 			for each(var ellipseObject:Object in boneObject[ConstValues.ELLIPSE])
 			{
-				boneObject.addAreaData(parseEllipseData(ellipseObject));
+				boneData.addAreaData(parseEllipseData(ellipseObject));
 			}
 			
 			return boneData;

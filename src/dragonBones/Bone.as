@@ -1,5 +1,6 @@
 ﻿package dragonBones
 {
+	import dragonBones.objects.ParentTransformObject;
 	import flash.geom.Matrix;
 	import flash.geom.Point;
 	
@@ -360,9 +361,16 @@
 			blendingTimeline();
 			
 		//计算global
-			var result:Object = updateGlobal();
-			var parentGlobalTransform:DBTransform = result ? result.parentGlobalTransform : null;
-			var parentGlobalTransformMatrix:Matrix = result ? result.parentGlobalTransformMatrix : null;
+			var result:ParentTransformObject = updateGlobal();
+			var parentGlobalTransform:DBTransform;
+			var parentGlobalTransformMatrix:Matrix;
+			
+			if (result)
+			{
+				parentGlobalTransform = result.parentGlobalTransform;
+				parentGlobalTransformMatrix = result.parentGlobalTransformMatrix;
+				result.release();
+			}
 			
 		//计算globalForChild
 			var ifExistOffsetTranslation:Boolean = _offset.x != 0 || _offset.y != 0;

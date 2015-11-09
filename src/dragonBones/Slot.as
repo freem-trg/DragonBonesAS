@@ -30,6 +30,8 @@
 		/** @private */
 		dragonBones_internal var _tweenZOrder:Number;
 		/** @private */
+		dragonBones_internal var _originDisplayIndex:Number;
+		/** @private */
 		protected var _offsetZOrder:Number;
 		
 		protected var _displayList:Array;
@@ -45,6 +47,7 @@
 		
 		/** @private */
 		dragonBones_internal var _isColorChanged:Boolean;
+		dragonBones_internal var _needUpdate:Boolean;
 		/** @private */
 //		protected var _timelineStateList:Vector.<SlotTimelineState>;
 		
@@ -81,6 +84,7 @@
 			blendMode = slotData.blendMode;
 			_originZOrder = slotData.zOrder;
 			_displayDataList = slotData.displayDataList;
+			_originDisplayIndex = slotData.displayIndex;
 		}
 		
 		/**
@@ -159,13 +163,14 @@
 		/** @private */
 		dragonBones_internal function update():void
 		{
-			if(this._parent._needUpdate <= 0)
+			if(this._parent._needUpdate <= 0 && !_needUpdate)
 			{
 				return;
 			}
 			
 			updateGlobal().release();
 			updateTransform();
+			_needUpdate = false;
 		}
 		
 		override protected function calculateRelativeParentTransform():void
@@ -240,6 +245,7 @@
 					{
 						this._origin.copy(_displayDataList[_currentDisplayIndex].transform);
 					}
+					_needUpdate = true;
 				}
 				else if(!_isShowDisplay)
 				{
@@ -302,7 +308,7 @@
 				}
 				updateDisplayBlendMode(_blendMode);
 				updateDisplayColor(	_colorTransform.alphaOffset, _colorTransform.redOffset, _colorTransform.greenOffset, _colorTransform.blueOffset,
-									_colorTransform.alphaMultiplier, _colorTransform.redMultiplier, _colorTransform.greenMultiplier, _colorTransform.blueMultiplier);
+									_colorTransform.alphaMultiplier, _colorTransform.redMultiplier, _colorTransform.greenMultiplier, _colorTransform.blueMultiplier,true);
 				updateDisplayVisible(_visible);
 				updateTransform();
 			}
@@ -575,6 +581,12 @@
 			}
 			TransformUtil.matrixToTransform(_globalTransformMatrix,_global,true,true);
 			return output;
+		}
+		
+		dragonBones_internal function resetToOrigin():void
+		{
+			changeDisplay(_originDisplayIndex);
+			updateDisplayColor(0, 0, 0, 0, 1, 1, 1, 1, true);
 		}
 	}
 }

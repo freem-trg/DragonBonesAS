@@ -225,7 +225,10 @@ package dragonBones.fast.animation
 		
 		private function advanceTimelinesTime(passedTime:Number):void
 		{
-			_time += passedTime;
+			if(_isPlaying)
+			{
+				_time += passedTime;
+			}
 			
 			//计算是否已经播放完成isThisComplete
 
@@ -423,11 +426,18 @@ package dragonBones.fast.animation
 		{
 			for each(var timelineName:String in animationData.hideTimelineNameMap)
 			{
-				
-				var slot:FastSlot = _armature.getSlot(timelineName);
-				if(slot)
+				var bone:FastBone = _armature.getBone(timelineName);
+				if(bone)
 				{
-					slot.hideSlots();
+					bone.hideSlots();
+				}
+			}
+			for each(var slotTimelineName:String in animationData.hideSlotTimelineNameMap)
+			{
+				var slot:FastSlot = _armature.getSlot(slotTimelineName);
+				if (slot)
+				{
+					slot.resetToOrigin();
 				}
 			}
 		}

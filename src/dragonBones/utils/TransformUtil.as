@@ -17,6 +17,11 @@ package dragonBones.utils
 		
 		private static const _helpTransformMatrix:Matrix = new Matrix();
 		private static const _helpParentTransformMatrix:Matrix = new Matrix();
+
+		//Some performance optimization
+		private static var tmpSkewXArray:Vector.<Number> = new Vector.<Number>(4);
+		private static var tmpSkewYArray:Vector.<Number> = new Vector.<Number>(4);
+		private static var ACCURACY : Number = 0.0001;
 		
 		public static function transformToMatrix(transform:DBTransform, matrix:Matrix):void
 		{
@@ -54,6 +59,19 @@ package dragonBones.utils
 			matrixToTransform(_helpTransformMatrix, transform, transform.scaleX * parent.scaleX >= 0, transform.scaleY * parent.scaleY >= 0);
 		}
 		
+		[Inline]
+		private static function isEqual(n1:Number, n2:Number):Boolean
+		{
+			if (n1 >= n2)
+			{
+				return (n1 - n2) <= ACCURACY;
+			}
+			else
+			{
+				return (n2 - n1) <= ACCURACY;
+			}
+		}
+		
 		public static function matrixToTransform(matrix:Matrix, transform:DBTransform, scaleXF:Boolean, scaleYF:Boolean):void
 		{
 			transform.x = matrix.tx;
@@ -61,36 +79,36 @@ package dragonBones.utils
 			transform.scaleX = Math.sqrt(matrix.a * matrix.a + matrix.b * matrix.b) * (scaleXF ? 1 : -1);
 			transform.scaleY = Math.sqrt(matrix.d * matrix.d + matrix.c * matrix.c) * (scaleYF ? 1 : -1);
 			
-			var skewXArray:Array = [];
-			skewXArray[0] = Math.acos(matrix.d / transform.scaleY);
-			skewXArray[1] = -skewXArray[0];
-			skewXArray[2] = Math.asin(-matrix.c / transform.scaleY);
-			skewXArray[3] = skewXArray[2] >= 0 ? Math.PI - skewXArray[2] : skewXArray[2] - Math.PI;
+			tmpSkewXArray[0] = Math.acos(matrix.d / transform.scaleY);
+			tmpSkewXArray[1] = -tmpSkewXArray[0];
+			tmpSkewXArray[2] = Math.asin(-matrix.c / transform.scaleY);
+			tmpSkewXArray[3] = tmpSkewXArray[2] >= 0 ? Math.PI - tmpSkewXArray[2] : tmpSkewXArray[2] - Math.PI;
 			
-			if(Number(skewXArray[0]).toFixed(4) == Number(skewXArray[2]).toFixed(4) || Number(skewXArray[0]).toFixed(4) == Number(skewXArray[3]).toFixed(4))
+			if (isEqual(tmpSkewXArray[0], tmpSkewXArray[2]) || isEqual(tmpSkewXArray[0], tmpSkewXArray[3]))
 			{
-				transform.skewX = skewXArray[0];
+				transform.skewX = tmpSkewXArray[0];
 			}
-			else 
+			else
 			{
-				transform.skewX = skewXArray[1];
+				transform.skewX = tmpSkewXArray[1];
 			}
 			
-			var skewYArray:Array = [];
-			skewYArray[0] = Math.acos(matrix.a / transform.scaleX);
-			skewYArray[1] = -skewYArray[0];
-			skewYArray[2] = Math.asin(matrix.b / transform.scaleX);
-			skewYArray[3] = skewYArray[2] >= 0 ? Math.PI - skewYArray[2] : skewYArray[2] - Math.PI;
+			tmpSkewYArray[0] = Math.acos(matrix.a / transform.scaleX);
+			tmpSkewYArray[1] = -tmpSkewYArray[0];
+			tmpSkewYArray[2] = Math.asin(matrix.b / transform.scaleX);
+			tmpSkewYArray[3] = tmpSkewYArray[2] >= 0 ? Math.PI - tmpSkewYArray[2] : tmpSkewYArray[2] - Math.PI;
 			
-			if(Number(skewYArray[0]).toFixed(4) == Number(skewYArray[2]).toFixed(4) || Number(skewYArray[0]).toFixed(4) == Number(skewYArray[3]).toFixed(4))
+			if (isEqual(tmpSkewYArray[0], tmpSkewYArray[2]) || isEqual(tmpSkewYArray[0], tmpSkewYArray[3]))
 			{
-				transform.skewY = skewYArray[0];
+				transform.skewY = tmpSkewYArray[0];
 			}
-			else 
+			else
 			{
-				transform.skewY = skewYArray[1];
+				transform.skewY = tmpSkewYArray[1];
 			}
+			
 		}
+		
 		//确保角度在-180到180之间
 		public static function normalizeRotation(rotation:Number):Number
 		{

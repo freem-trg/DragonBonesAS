@@ -1,5 +1,6 @@
 package dragonBones.core
 {
+	import dragonBones.objects.ParentTransformObject;
 	import flash.geom.Matrix;
 	
 	import dragonBones.Armature;
@@ -155,7 +156,7 @@ package dragonBones.core
 		{
 		}
 		
-		protected function calculateParentTransform():Object
+		protected function calculateParentTransform():ParentTransformObject
 		{
 			if(this.parent && (this.inheritTranslation || this.inheritRotation || this.inheritScale))
 			{
@@ -185,16 +186,15 @@ package dragonBones.core
 					parentGlobalTransformMatrix = DBObject._tempParentGlobalTransformMatrix;
 					TransformUtil.transformToMatrix(parentGlobalTransform, parentGlobalTransformMatrix);
 				}
-				
-				return {parentGlobalTransform:parentGlobalTransform, parentGlobalTransformMatrix:parentGlobalTransformMatrix};
+				return ParentTransformObject.create().setTo(parentGlobalTransform, parentGlobalTransformMatrix);
 			}
 			return null;
 		}
 		
-		protected function updateGlobal():Object
+		protected function updateGlobal():ParentTransformObject
 		{
 			calculateRelativeParentTransform();
-			var output:Object = calculateParentTransform();
+			var output:ParentTransformObject = calculateParentTransform();
 			if(output != null)
 			{
 				//计算父骨头绝对坐标

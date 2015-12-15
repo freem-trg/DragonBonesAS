@@ -88,6 +88,8 @@
 				var width:int = getNearest2N(content.width) * scaleForTexture;
 				var height:int = getNearest2N(content.height) * scaleForTexture;
 				
+				var maxSize:int = Math.max(width, height);
+				
 //				_helpMatrix.a = 1;
 //				_helpMatrix.b = 0;
 //				_helpMatrix.c = 0;
@@ -97,7 +99,8 @@
 				_helpMatrix.ty = 0;				
 				var movieClip:MovieClip = content as MovieClip;
 				movieClip.gotoAndStop(1);
-				bitmapData = new BitmapData(width, height, true, 0xFF00FF);
+				bitmapData = new BitmapData(maxSize, maxSize, true, 0xFF00FF);
+				//bitmapData = new BitmapData(width, height, true, 0xFF00FF);
 				bitmapData.draw(movieClip, _helpMatrix);
 				movieClip.gotoAndStop(movieClip.totalFrames);
 				texture = Texture.fromBitmapData(bitmapData, generateMipMaps, optimizeForRenderToTexture, scaleForTexture);
